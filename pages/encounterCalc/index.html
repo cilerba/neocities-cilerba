@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cilerba's place</title>
+  	
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="data.js"></script>
+    <script src="/locale.js"></script>
+    <script src="/index.js"></script>
+    <script src="enccalc.js"></script>
+    
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="style.css" rel="stylesheet" type="text/css" media="all">
+    <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
+  </head>
+  <body>
+    <div id="siteContainer">
+      <header id="mainHeader">
+        <a href="/index.html">
+          cilerba's place
+          <img style="margin-bottom: -10px;" src="https://www.serebii.net/pokearth/sprites/silver/190.png">
+        </a>
+      </header>
+      
+			<nav id="mainNav"></nav>
+
+      <div class="section">
+        <div class="title">
+          <h1>Encounter Calculator</h1>
+          <p class="tiny">0.1 -- based on <a href="https://github.com/AngefloSH/PokemonEncCalc">AngefloSH's Encounter Calculator</a></p>
+        </div>
+        <div class="gridParent">
+          <div class="gridCell" id="leftCell">
+            <p class="bold" id="encHeader">Encounters</p>
+
+            <div id="encounterContainer">
+              <div class="encounterSlot" id="prefab">
+                <p id="percent"></p><img src=""><p id="species" class="bold"></p><p id="minLevel"></p><p id="maxLevel"></p>
+              </div>
+            </div>
+          </div>
+          <div class="rightCell">
+            <p class="bold">Game</p>
+            <select id="ddVersion"></select>
+            <br>
+
+            <p class="bold">Map</p>
+            <select id="ddMap"></select>
+            <br>
+
+            <p class="bold">Encounter Type</p>
+            <select id="ddEncounter"></select>
+            <br>
+
+            <p class="bold">Repel</p>
+            <span class="repel">
+              <p>Lv.</p>
+              <input type="number" id="repelLevel" name="Level" min="1" max="100" value="1">
+            </span>
+            <p class="bold">Encounter Rate</p>
+            <p id="encRate">--</p>
+            <div id="encBarBG">
+              <div id="encBar"></div>
+            </div>
+            <br>
+            <div class="divButton bold" id="repelButton">Calculate</div>
+
+            <hr class="solid" id="divider">
+            <span id="sectToD">
+              <p class="bold">Time</p>
+              <select id="ddTime">
+                <option id="walkMorningSlots" localeid="TOD_MORN">Morning</option>
+                <option id="walkSlots" localeid="TOD_DAY">Day</option>
+                <option id="walkNightSlots" localeid="TOD_NIGHT">Night</option>
+              </select>
+            </span>
+
+            <span id="sectSwarm">
+              <p class="bold">Swarm</p>
+              <input type="checkbox" id="checkSwarm" value="swarm">
+              <label for="checkSwarm"> Active</label><br>
+            </span>
+          </div>
+         </div>
+      </div>
+    </div>
+  </body>
+</html>
