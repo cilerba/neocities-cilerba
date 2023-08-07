@@ -25,7 +25,7 @@ async function setLocale(newLocale) {
 
 async function fetchTranslationsFor(newLocale)
 {
-    const response = await fetch(`/pages/encounterCalc/lang/${newLocale}.json`);
+    const response = await fetch(`/pages/encountercalc/lang/${newLocale}.json`);
 
     return await response.json();
 }
