@@ -188,7 +188,7 @@ function getMapEncounters(map, slotName)
     if (GameVersion[ddVersion.options[ddVersion.selectedIndex].getAttribute("localeid")].daynight && EncounterType[slotName] === EncounterType.WALKING)
     {
         // Swarm check
-        if (map["outbreakMorningSlots"].length > 0 && swarmCheck.checked)
+        if (map.hasOwnProperty("outbreakMorningSlots") && map["outbreakMorningSlots"].length > 0 && swarmCheck.checked)
         {
             switch (ddTimeOfDay.selectedIndex)
             {
@@ -204,7 +204,7 @@ function getMapEncounters(map, slotName)
         return map[ddTimeOfDay[ddTimeOfDay.selectedIndex].id];
     } else {
         // Swarm check
-        if (map["outbreakSurfSlots"].length > 0 && EncounterType[slotName] === EncounterType.SURF && swarmCheck.checked)
+        if (map.hasOwnProperty("outbreakSurfSlots") && map["outbreakSurfSlots"].length > 0 && EncounterType[slotName] === EncounterType.SURF && swarmCheck.checked)
         {
             return map["outbreakSurfSlots"];
         }
@@ -350,9 +350,14 @@ function mapChanged()
 
     let hasSwarm = false;
 
-    if (map["outbreakMorningSlots"].length > 0 || map["outbreakDaySlots"].length > 0 || map["outbreakNightSlots"].length > 0 || map["outbreakSurfSlots"].length > 0)
+    // Temporary swarm check
+    // TODO: Support for Gen 4 + 5 swarm
+    if (map.hasOwnProperty("outbreakDaySlots"))
     {
-        hasSwarm = true;
+        if (map["outbreakMorningSlots"].length > 0 || map["outbreakDaySlots"].length > 0 || map["outbreakNightSlots"].length > 0 || map["outbreakSurfSlots"].length > 0)
+        {
+            hasSwarm = true;
+        }
     }
 
     swarmSect.style.display = hasSwarm ? "inline" : "none";
@@ -379,12 +384,17 @@ function updateSwarmCheckmark(map)
 
     let hasSwarm = false;
 
-    if ((EncounterType[ddEncounter.options[ddEncounter.selectedIndex].getAttribute("localeid")] === EncounterType.WALKING &&
-       (map["outbreakMorningSlots"].length > 0 || map["outbreakDaySlots"].length > 0 || map["outbreakNightSlots"].length > 0)) ||
-       (EncounterType[ddEncounter.options[ddEncounter.selectedIndex].getAttribute("localeid")] === EncounterType.SURF && 
-       (map["outbreakSurfSlots"].length > 0)) )
+    // Temporary swarm check
+    // TODO: Support for Gen 4 + 5 swarm
+    if (map.hasOwnProperty("outbreakDaySlots"))
     {
-        hasSwarm = true;
+        if ((EncounterType[ddEncounter.options[ddEncounter.selectedIndex].getAttribute("localeid")] === EncounterType.WALKING &&
+        (map["outbreakMorningSlots"].length > 0 || map["outbreakDaySlots"].length > 0 || map["outbreakNightSlots"].length > 0)) ||
+        (EncounterType[ddEncounter.options[ddEncounter.selectedIndex].getAttribute("localeid")] === EncounterType.SURF && 
+        (map["outbreakSurfSlots"].length > 0)) )
+        {
+            hasSwarm = true;
+        }
     }
 
     swarmSect.style.display = hasSwarm ? "inline" : "none";
