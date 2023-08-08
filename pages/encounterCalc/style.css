@@ -156,3 +156,11 @@ p.tiny {
 #sectAbility {
     display: none;
 }
+
+#bottom {
+    margin-top:12px;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: 2fr;
+    padding: 0px 24px;
+}
