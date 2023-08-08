@@ -144,3 +144,11 @@ p.tiny {
     font-style: italic;
     margin-top: 0px;
 }
+
+.sectSwarm {
+    display: none;
+}
+
+.sectToD {
+    display: none;
+}
