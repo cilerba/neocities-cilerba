@@ -38,6 +38,9 @@ let dropEncounter;
 // - Time
 let timeDiv;
 let dropTime;
+// - Ability
+let abilityDiv;
+let dropAbility;
 
 // Repel
 // - Elements
@@ -109,6 +112,10 @@ function initElements()
     timeDiv = document.getElementById("sectToD");
     dropTime = document.getElementById("ddTime");
     dropTime.addEventListener("change", encounterChanged);
+
+    abilityDiv = document.getElementById("sectAbility");
+    dropAbility = document.getElementById("ddAbility");
+    dropAbility.addEventListener("change", updateRepelEncounters);
     
     // Repel
     repelElement = document.getElementById("repelLevel");
@@ -241,9 +248,17 @@ function versionChanged()
             createDropdownOption(dropMap, currentGameData[i].id, i);
         }
 
+        // Toggle misc options based on game version
+        let versionData = getVersionData();
+
         // Enable Time of Day section if version is marked as having DNS
-        timeDiv.style.display = GameVersion[dropVersion.options[dropVersion.selectedIndex].getAttribute("localeid")].daynight? "inline" : "none"; 
+        timeDiv.style.display = versionData.daynight? "inline" : "none"; 
         
+        // Enable Abilities for Emerald temporarily
+        // Number instead of bool for support for games with more abilities
+        // TODO: Change toggle to ability dropdown population
+        abilityDiv.style.display = versionData.abilities > 0? "inline": "none";
+
         // For fun: Select a random map on load
         selectRandomDropdown(dropMap);
 
@@ -309,6 +324,11 @@ function getCurrentMapData()
     return currentGameData.find(element => element["id"] === dropMap.options[dropMap.value].getAttribute("localeid"));
 }
 
+function getVersionData()
+{
+    return GameVersion[dropVersion.options[dropVersion.selectedIndex].getAttribute("localeid")];
+}
+
 // 
 function calcRepelEncounters(slots, repel)
 {
@@ -340,9 +360,9 @@ function normalizeRepelEncounters(encounters)
 
     while (slots.length != 0)
     {
-        let encounter = slots[0]
+        let encounter = slots[0];
         let percent = encounter.percent;
-        let effPercent = percent;
+        let effPercent = encounter.effectivePercent;
         let minLvl = encounter.minLevel;
         let maxLvl = encounter.maxLevel;
 
@@ -353,7 +373,7 @@ function normalizeRepelEncounters(encounters)
                 minLvl = Math.min(minLvl, slots[i].minLevel);
                 maxLvl = Math.max(maxLvl, slots[i].maxLevel);
                 percent += slots[i].percent;
-                effPercent += slots[i].percent;
+                effPercent += slots[i].effectivePercent;
             }
         }
 
@@ -389,12 +409,199 @@ function updateRepelEncounters()
     let map = getCurrentMapData();
     let encounters = getMapEncounters(map, dropEncounter.options[dropEncounter.selectedIndex].getAttribute("localeid"));
 
-    repelEncounters = calcRepelEncounters(encounters, repelElement.value);
+    // Calc ability before repel if it's active and an ability is selected
+    if (getVersionData().abilities > 0 && dropAbility.selectedIndex > 0)
+    {
+        encounters = calcAbilityEncounters(encounters);
+        repelEncounters = calcRepelEncounters(encounters, 0);
+    } else {
+        repelEncounters = calcRepelEncounters(encounters, repelElement.value);
+    }
+
 
     if (repelActive)
     {
         refreshEncounterDisplay(repelEncounters, true);
     }
+}
+
+function calcAbilityEncounters(encounters)
+{
+    let slotCount = encounters.length;
+    let encCopy = JSON.parse(JSON.stringify(encounters));
+
+    switch (dropAbility.selectedIndex)
+    {
+        case 1: // Static
+            calcAbilityType("ELECTRIC", encCopy);
+            break;
+        case 2: // Magnet Pull
+            calcAbilityType("STEEL", encCopy);
+            break;
+        case 3: // Hustle / Pressure / Vital Spirit
+            let case23 = false;
+
+            for (let i = 0; i < encCopy; i++)
+            {
+                if (encCopy[i].minLevel != encCopy[i].maxLevel)
+                {
+                    case23 = true;
+                    break;
+                }
+            }
+
+            if (case23)
+            {
+                // Case 3
+                // Gen 5 (Black = 13) and onwards
+                // TODO: Research best way to replace number with form of identifier
+                // TODO: Test this proper
+                if (getVersionData().index >= 13)
+                {
+                    for (let i = 0; i < slotCount; i++)
+                    {
+                        encCopy[i].percent /= 2;
+                        let maxLvl = 0;
+                        let capped = 0;
+                        let lvRange = encCopy[i].maxLevel - encCopy[i].minLevel + 1;
+                        let slotData = getPokemonData(encCopy[i]);
+                        
+                        encCopy.map((val) => {
+                            let currData = getPokemonData(val);
+                            if (currData.dexNo === slotData.dexNo)
+                            {
+                                maxLvl = Math.max(maxLvl, val.maxLevel);
+                            }
+                        });
+
+                        capped = Math.max(Math.min((5 - (maxLvl - encCopy[i].maxLevel)), lvRange), 0);
+
+                        let percent = encCopy[i].percent * (lvRange - capped) / lvRange;
+                        encCopy.push({
+                            "pokemon": encCopy[i].pokemon,
+                            "form": encCopy[i].form,
+                            "percent": percent,
+                            "effectivePercent": percent,
+                            "minLevel": Math.min(encCopy[i].maxLevel, maxLvl),
+                            "maxLevel": Math.min(encCopy[i].minLevel + 5, maxLvl)
+                        });
+
+                        encCopy.push({
+                            "pokemon": encCopy[i].pokemon,
+                            "form": encCopy[i].form,
+                            "percent": encCopy[i].percent * capped / lvRange,
+                            "effectivePercent": encCopy[i].percent * capped / lvRange,
+                            "minLevel": maxLvl,
+                            "maxLevel": maxLvl
+                        });
+                    }
+                } else { // Case 2 (Before Gen 5)
+                    for (let i = 0; i < slotCount; i++)
+                    {
+                        encCopy[i].percent /= 2;
+                        encCopy.push({
+                            "pokemon": encCopy[i].pokemon,
+                            "form": encCopy[i].form,
+                            "percent": encCopy[i].percent,
+                            "effectivePercent": encCopy[i].percent,
+                            "minLevel": encCopy[i].maxLevel,
+                            "maxLevel": encCopy[i].maxLevel   
+                        });
+                    }
+                }
+            } else { // Case 1
+                for (let i = 0; i < slotCount; i++)
+                {
+                    let maxLvl = 0;
+                    let slotData = getPokemonData(encCopy[i]);
+
+                    encCopy.map((val) => {
+                        let currData = getPokemonData(val);
+                        if (currData.dexNo === slotData.dexNo)
+                        {
+                            maxLvl = Math.max(maxLvl, val.maxLevel);
+                        }
+                    });
+
+                    encCopy.push({
+                        "pokemon": encCopy[i].pokemon,
+                        "form": encCopy[i].form,
+                        "percent": encCopy[i].percent / 2,
+                        "effectivePercent": encCopy[i].percent / 2,
+                        "minLevel": maxLvl,
+                        "maxLevel": maxLvl   
+                    });
+
+                    encCopy[i].percent /= 2;
+                }
+            }
+            break;
+        case 4: // Keen Eye / Intimidate
+            let intimidate = repelElement.value;
+            intimidate -= 4;
+
+            if (intimidate < 1) break;
+
+            for (let i = 0; i < slotCount; i++)
+            {
+                let s = encCopy[i];
+                let lvRange = Math.max(0, Math.min(1, (s.maxLevel - intimidate + 1) / (s.maxLevel - s.minLevel + 1)));
+                s.percent /= 2;
+                s.effectivePercent = s.percent;
+                let p = s.percent * lvRange;
+
+                let enc = {
+                    "pokemon": s.pokemon,
+                    "form": s.form,
+                    "percent": p,
+                    "effectivePercent": p,
+                    "minLevel": intimidate,
+                    "maxLevel": s.maxLevel
+                };
+
+                encCopy.push(enc);
+            }    
+
+            encCopy = encCopy.filter(x => x.percent > 0);
+            break;
+    }
+
+    return encCopy;
+}
+
+// Reuse same code for Static and Magnet Pull
+function calcAbilityType(type, encounters)
+{
+    let numType = 0;
+
+    encounters.map((val, index) => {
+        let data = getPokemonData(val);
+
+        if (data.type1 === type || data.type2 === type)
+        {
+            numType++;
+        }
+    });
+
+    if (numType > 0)
+    {
+        for (let i = 0; i < slotCount; i++)
+        {
+            let data = getPokemonData(encounters[i])
+    
+            if (data.type1 === type || data.type2 === type)
+            {
+                let e = JSON.parse(JSON.stringify(encounters[i]));
+                e.percent = 50 / numType;
+                encounters.push(e);
+            }
+    
+            encounters[i].percent /= 2;
+        }
+    }
+
+    return encounters;
+
 }
 
 function displayRepelInfo()

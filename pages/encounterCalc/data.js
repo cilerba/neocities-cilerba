@@ -2,32 +2,38 @@ const GameVersion = {
     "GOLD": {
         "index": 0,
         "mapName": "mapsGold",
-        "daynight": true
+        "daynight": true,
+        "abilities": 0
     },
     "SILVER": {
         "index": 1,
         "mapName": "mapsSilver",
-        "daynight": true
+        "daynight": true,
+        "abilities": 0
     },
     "CRYSTAL": {
         "index": 2,
         "mapName": "mapsCrystal",
-        "daynight": true
+        "daynight": true,
+        "abilities": 0
     },
     "RUBY": {
         "index": 3,
         "mapName": "mapsRuby",
-        "daynight": false
+        "daynight": false,
+        "abilities": 0
     },
     "SAPPHIRE": {
         "index": 4,
         "mapName": "mapsSapphire",
-        "daynight": false
+        "daynight": false,
+        "abilities": 0
     },
     "EMERALD": {
         "index": 5,
         "mapName": "mapsEmerald",
-        "daynight": false
+        "daynight": false,
+        "abilities": 1
     }
 }
 

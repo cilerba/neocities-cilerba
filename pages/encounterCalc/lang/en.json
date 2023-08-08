@@ -29,6 +29,12 @@
     "TOD_DAY": "Day",
     "TOD_NIGHT": "Night",
 
+    "NONE": "None",
+    "ABILITY_STATIC": "Static",
+    "ABILITY_MAGNETPULL": "Magnet Pull",
+    "ABILITY_HUSTLE": "Hustle / Pressure / Vital Spirit",
+    "ABILITY_KEENEYE": "Keen Eye / Intimidate",
+
     "BLACKTHORN_CITY": "Blackthorn City",
     "BURNED_TOWER_1F": "Burned Tower 1F",
     "BURNED_TOWER_B1F": "Burned Tower B1F",

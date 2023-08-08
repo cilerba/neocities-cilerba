@@ -145,10 +145,14 @@ p.tiny {
     margin-top: 0px;
 }
 
-.sectSwarm {
+#sectSwarm {
     display: none;
 }
 
-.sectToD {
+#sectToD {
+    display: none;
+}
+
+#sectAbility {
     display: none;
 }
