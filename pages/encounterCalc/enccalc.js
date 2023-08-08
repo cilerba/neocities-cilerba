@@ -491,13 +491,13 @@ function createDropdownOption(element, localeid, valueOverride = -1)
 
 // Returns image url of icon
 // Expects encounter slot from map JSON
-function getPokemonIcon(slot)
+function getPokemonIcon(encounter)
 {    
     let url = "https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen8/regular/";
-    let monName = String(Pokemon[slot.pokemon].valueOf()).padStart(3, '0');
+    let monName = String(getPokemonData(encounter).dexNo).padStart(3, 0);
     let iconData = pokemonIcons[monName];
     let iconSlug = iconData.slug.eng;
-    let monForm = slot.form;
+    let monForm = encounter.form;
 
     let formData;
 
@@ -529,4 +529,10 @@ function getPokemonIcon(slot)
 
     url += iconSlug + ".png";
     return url;
+}
+
+// Returns the species object for an encounter slot's pokemon id/form
+function getPokemonData(encounter)
+{
+    return Pokemon[encounter.pokemon + "_" + encounter.form];
 }
