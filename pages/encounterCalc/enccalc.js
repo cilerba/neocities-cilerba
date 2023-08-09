@@ -44,16 +44,16 @@ let dropAbility;
 
 // Repel
 // - Elements
-let repelElement;
-let repelButton; // "Calculate"!
-let repelEncRateText;
-let repelEncRateBar;
+let leadLevel;
+let calcButton; // "Calculate"!
+let encounterRateText;
+let encounterRateBar;
+let repelCheck; // Repel Checkbox
 
 // - Data
 let repelEncRate; // Encounter rate for current repel level
 let repelEncounters; // Encounter slots stored to display when 
-let repelActive = false; // If the encounters are being displayed
-
+let repelDisplay = false; // If the encounters are being displayed
 let encHeaderText;
 
 // Swarm
@@ -73,6 +73,7 @@ onload = (event) => {
     initElements();
     initSlotElements();
 
+    // TODO: Page load shouldn't depend on sprites loading
     $.getJSON("https://raw.githubusercontent.com/msikma/pokesprite/master/data/pokemon.json").done( function(json) {
         pokemonIcons = json;
 
@@ -115,16 +116,16 @@ function initElements()
 
     abilityDiv = document.getElementById("sectAbility");
     dropAbility = document.getElementById("ddAbility");
-    dropAbility.addEventListener("change", updateRepelEncounters);
     
     // Repel
-    repelElement = document.getElementById("repelLevel");
-    repelElement.addEventListener("input", updateRepelEncounters);
-    repelEncRateText = document.getElementById("encRate");
-    repelEncRateBar = document.getElementById("encBar");
+    leadLevel = document.getElementById("leadLevel");
+    encounterRateText = document.getElementById("encRate");
+    encounterRateBar = document.getElementById("encBar");
+    repelCheck = document.getElementById("checkRepel");
 
-    repelButton = document.getElementById("repelButton");
-    repelButton.addEventListener("click", displayRepelInfo)
+    calcButton = document.getElementById("calcButton");
+    calcButton.addEventListener("click", runRepelCalc)
+
 
     // Swarm
     checkSwarm = document.getElementById("checkSwarm");
@@ -256,7 +257,6 @@ function versionChanged()
         
         // Enable Abilities for Emerald temporarily
         // Number instead of bool for support for games with more abilities
-        // TODO: Change toggle to ability dropdown population
         abilityDiv.style.display = versionData.abilities > 0? "inline": "none";
 
         // For fun: Select a random map on load
@@ -300,7 +300,6 @@ function encounterChanged()
     let encounters = getMapEncounters(mapData, dropEncounter.options[dropEncounter.selectedIndex].getAttribute("localeid"));
     refreshEncounterDisplay(encounters);
     refreshSwarmCheckmark(mapData);
-    updateRepelEncounters();
 }
 
 function refreshSwarmCheckmark(mapData)
@@ -330,25 +329,7 @@ function getVersionData()
 }
 
 // 
-function calcRepelEncounters(slots, repel)
-{
-    // Deep copy the slots passed
-    let result =  JSON.parse(JSON.stringify(slots));
 
-    // Calc
-    result.map((element) => {
-        element.percent *= Math.min(Math.max(0, (element.maxLevel - repel + 1) / (element.maxLevel - element.minLevel + 1)), 1);
-    });
-
-    // If percent = 0, remove
-    result = result.filter(element => element.percent > 0);
-
-    let normalizedResult = normalizeRepelEncounters(result);
-    
-    repelEncRate = sumArray(result, "percent");
-    
-    return normalizedResult;
-}
 
 function normalizeRepelEncounters(encounters)
 {
@@ -404,25 +385,78 @@ function normalizeRepelEncounters(encounters)
     return normalizedSlots;
 }
 
-function updateRepelEncounters()
+
+/* Repel ------------------------------------------------------------------------------------------------------ */
+
+function runRepelCalc()
 {
-    let map = getCurrentMapData();
-    let encounters = getMapEncounters(map, dropEncounter.options[dropEncounter.selectedIndex].getAttribute("localeid"));
+    repelDisplay = !repelDisplay;
 
-    // Calc ability before repel if it's active and an ability is selected
-    if (getVersionData().abilities > 0 && dropAbility.selectedIndex > 0)
+    let toggleables = document.getElementsByClassName("toggleable");
+    
+    for (let i = 0; i < toggleables.length; i++)
     {
-        encounters = calcAbilityEncounters(encounters);
-        repelEncounters = calcRepelEncounters(encounters, 0);
-    } else {
-        repelEncounters = calcRepelEncounters(encounters, repelElement.value);
+        toggleables[i].disabled = repelDisplay;
     }
 
-
-    if (repelActive)
+    if (repelDisplay)
     {
+        let map = getCurrentMapData();
+        let encounters = getMapEncounters(map, dropEncounter.options[dropEncounter.selectedIndex].getAttribute("localeid"));
+    
+        // Calc ability before repel if it's active and an ability is selected
+        if (getVersionData().abilities > 0 && dropAbility.selectedIndex > 0)
+        {
+            encounters = calcAbilityEncounters(encounters);
+            repelEncounters = calcRepelEncounters(encounters, 0);
+        } else {
+            repelEncounters = calcRepelEncounters(encounters, repelCheck.checked? leadLevel.value : 0);
+        }
+        
         refreshEncounterDisplay(repelEncounters, true);
+    } else {
+        refreshEncounterDisplay(getMapEncounters(getCurrentMapData(), dropEncounter.options[dropEncounter.selectedIndex].getAttribute("localeid")));
     }
+
+    updateEncounterBar();
+}
+
+function calcRepelEncounters(encounters, repel)
+{
+    // Deep copy the encounters passed
+    let result =  JSON.parse(JSON.stringify(encounters));
+
+    // Calc
+    result.map((element) => {
+        element.percent *= Math.min(Math.max(0, (element.maxLevel - repel + 1) / (element.maxLevel - element.minLevel + 1)), 1);
+    });
+
+    // If percent = 0, remove
+    result = result.filter(element => element.percent > 0);
+
+    let normalizedResult = normalizeRepelEncounters(result);
+    
+    repelEncRate = sumArray(result, "percent");
+    
+    return normalizedResult;
+}
+
+// TODO: Localization
+function updateEncounterBar()
+{
+    encounterRateText.innerText = repelDisplay? (repelEncRate + "%") : "--";
+    encounterRateBar.style["width"] = repelDisplay? (repelEncRate + "%") : "0%";
+
+    calcButton.innerText = repelDisplay ? "Back" : "Calculate";
+    
+    if (repelDisplay)
+    {
+        calcButton.className += " back";
+    } else {
+        calcButton.className = calcButton.className.replace(" back", "");
+    }
+
+    encHeaderText.innerText = repelDisplay ? "Encounters (Repel Activated)" : "Encounters";
 }
 
 function calcAbilityEncounters(encounters)
@@ -537,7 +571,7 @@ function calcAbilityEncounters(encounters)
             }
             break;
         case 4: // Keen Eye / Intimidate
-            let intimidate = repelElement.value;
+            let intimidate = leadLevel.value;
             intimidate -= 4;
 
             if (intimidate < 1) break;
@@ -550,6 +584,7 @@ function calcAbilityEncounters(encounters)
                 s.effectivePercent = s.percent;
                 let p = s.percent * lvRange;
 
+                // TODO: Create function to add new EncounterSlots replicating C# constructor
                 let enc = {
                     "pokemon": s.pokemon,
                     "form": s.form,
@@ -601,48 +636,9 @@ function calcAbilityType(type, encounters)
     }
 
     return encounters;
-
 }
 
-function displayRepelInfo()
-{
-    repelActive = !repelActive;
-    
-    if (!repelActive)
-    {
-        refreshEncounterDisplay(getMapEncounters(getCurrentMapData(), dropEncounter.options[dropEncounter.selectedIndex].getAttribute("localeid")));
-    } else {    
-        refreshEncounterDisplay(repelEncounters, true);
-    }
-
-    dropAbility.disabled = repelActive;
-    dropMap.disabled = repelActive;
-    dropVersion.disabled = repelActive;
-    dropEncounter.disabled = repelActive;
-    repelElement.disabled = repelActive;
-
-    toggleEncounterBar();
-}
-
-// TODO: Localization
-function toggleEncounterBar()
-{
-    repelEncRateText.innerText = repelActive? (repelEncRate + "%") : "--";
-    repelEncRateBar.style["width"] = repelActive? (repelEncRate + "%") : "0%";
-
-    repelButton.innerText = repelActive ? "Back" : "Calculate";
-    
-    if (repelActive)
-    {
-        repelButton.className += " back";
-    } else {
-        repelButton.className = repelButton.className.replace(" back", "");
-    }
-
-    encHeaderText.innerText = repelActive ? "Encounters (Repel Activated)" : "Encounters";
-}
-
-/* Util */
+/* Utils ------------------------------------------------------------------------------------------------------ */
 
 // Removes all options from a dropdown
 // (Used when changing game versions)

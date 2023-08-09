@@ -42,35 +42,42 @@
           </div>
           <div class="rightCell">
             <p class="bold">Game</p>
-            <select id="ddVersion"></select>
+            <select class="toggleable" id="ddVersion"></select>
             <br>
 
             <p class="bold">Map</p>
-            <select id="ddMap"></select>
+            <select class="toggleable" id="ddMap"></select>
             <br>
 
             <p class="bold">Encounter Type</p>
-            <select id="ddEncounter"></select>
+            <select class="toggleable" id="ddEncounter"></select>
             <br>
 
-            <p class="bold">Repel</p>
-            <span class="repel">
-              <p>Lv.</p>
-              <input type="number" id="repelLevel" name="Level" min="1" max="100" value="1">
-            </span>
+            <div class="levelParent">
+              <span class="level">
+                <p class="bold">Lead Level</p>
+                <label for="leadLevel">Lv.</label>
+                <input class="toggleable" type="number" id="leadLevel" name="Level" min="1" max="100" value="1">
+              </span>
+              <span class="repel">
+                <p class="bold">Repel</p>
+                <input class="toggleable" type="checkbox" id="checkRepel">
+                <label for="checkRepel"> Active</label>
+              </span>
+            </div>
             <p class="bold">Encounter Rate</p>
             <p id="encRate">--</p>
             <div id="encBarBG">
               <div id="encBar"></div>
             </div>
             <br>
-            <div class="divButton bold" id="repelButton">Calculate</div>
+            <div class="divButton bold" id="calcButton">Calculate</div>
 
             <hr class="solid" id="divider">
 
             <span id="sectAbility">
               <p class="bold">Ability</p>
-              <select id="ddAbility">
+              <select class="toggleable" id="ddAbility">
                 <option localeid="NONE">None</option>
                 <option localeid="ABILITY_STATIC">Static</option>
                 <option localeid="ABILITY_MAGNETPULL">Magnet Pull</option>
@@ -81,7 +88,7 @@
 
             <span id="sectToD">
               <p class="bold">Time</p>
-              <select id="ddTime">
+              <select class="toggleable" id="ddTime">
                 <option id="walkMorningSlots" localeid="TOD_MORN">Morning</option>
                 <option id="walkSlots" localeid="TOD_DAY">Day</option>
                 <option id="walkNightSlots" localeid="TOD_NIGHT">Night</option>
@@ -90,8 +97,8 @@
 
             <span id="sectSwarm">
               <p class="bold">Swarm</p>
-              <input type="checkbox" id="checkSwarm" value="swarm">
               <label for="checkSwarm"> Active</label><br>
+              <input class="toggleable" type="checkbox" id="checkSwarm" value="swarm">
             </span>
           </div>
          </div>
