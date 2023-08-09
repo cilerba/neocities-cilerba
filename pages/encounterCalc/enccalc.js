@@ -434,7 +434,6 @@ function calcRepelEncounters(encounters, repel)
     // If percent = 0, remove
     result = result.filter(element => element.percent > 0);
 
-    console.log(result);
     let normalizedResult = normalizeRepelEncounters(result);
     
     repelEncRate = sumArray(normalizedResult, "percent");
