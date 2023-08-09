@@ -615,6 +615,12 @@ function displayRepelInfo()
         refreshEncounterDisplay(repelEncounters, true);
     }
 
+    dropAbility.disabled = repelActive;
+    dropMap.disabled = repelActive;
+    dropVersion.disabled = repelActive;
+    dropEncounter.disabled = repelActive;
+    repelElement.disabled = repelActive;
+
     toggleEncounterBar();
 }
 
