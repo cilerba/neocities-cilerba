@@ -27,6 +27,7 @@
     position: relative;
     bottom: 12px;
     min-height: 56px;
+    outline: none
 }
 
 .encounterSlot #species {
