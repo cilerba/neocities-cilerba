@@ -408,11 +408,10 @@ function runRepelCalc()
         if (getVersionData().abilities > 0 && dropAbility.selectedIndex > 0)
         {
             encounters = calcAbilityEncounters(encounters);
-            repelEncounters = calcRepelEncounters(encounters, 0);
-        } else {
-            repelEncounters = calcRepelEncounters(encounters, repelCheck.checked? leadLevel.value : 0);
         }
-        
+
+        repelEncounters = calcRepelEncounters(encounters, repelCheck.checked? leadLevel.value : 0);
+
         refreshEncounterDisplay(repelEncounters, true);
     } else {
         refreshEncounterDisplay(getMapEncounters(getCurrentMapData(), dropEncounter.options[dropEncounter.selectedIndex].getAttribute("localeid")));
@@ -426,17 +425,19 @@ function calcRepelEncounters(encounters, repel)
     // Deep copy the encounters passed
     let result =  JSON.parse(JSON.stringify(encounters));
 
-    // Calc
-    result.map((element) => {
-        element.percent *= Math.min(Math.max(0, (element.maxLevel - repel + 1) / (element.maxLevel - element.minLevel + 1)), 1);
-    });
+    for (let i = 0; i < result.length; i++)
+    {        
+        result[i].percent *= Math.min(Math.max(0, (result[i].maxLevel - repel + 1) / (result[i].maxLevel - result[i].minLevel + 1)), 1);
+    }
+
 
     // If percent = 0, remove
     result = result.filter(element => element.percent > 0);
 
+    console.log(result);
     let normalizedResult = normalizeRepelEncounters(result);
     
-    repelEncRate = sumArray(result, "percent");
+    repelEncRate = sumArray(normalizedResult, "percent");
     
     return normalizedResult;
 }
@@ -607,6 +608,7 @@ function calcAbilityEncounters(encounters)
 // Reuse same code for Static and Magnet Pull
 function calcAbilityType(type, encounters)
 {
+    let slotCount = encounters.length;
     let numType = 0;
 
     encounters.map((val, index) => {
@@ -627,11 +629,12 @@ function calcAbilityType(type, encounters)
             if (data.type1 === type || data.type2 === type)
             {
                 let e = JSON.parse(JSON.stringify(encounters[i]));
-                e.percent = 50 / numType;
+                e = setEncounterPercent(e, 50 / numType);
+
                 encounters.push(e);
             }
-    
-            encounters[i].percent /= 2;
+            
+            encounters[i] = setEncounterPercent(encounters[i], encounters[i].percent / 2);
         }
     }
 
@@ -744,4 +747,20 @@ function getPokemonIcon(encounter)
 function getPokemonData(encounter)
 {
     return Pokemon[encounter.pokemon + "_" + encounter.form];
+}
+
+function setEncounterPercent(encounter, value)
+{
+    let val = Math.max(value, 0);
+
+    if (encounter.percent == 0)
+    {
+        encounter.effectivePercent = val;
+    } else {
+        encounter.effectivePercent *= val / encounter.percent;
+    }
+
+    encounter.percent = val;
+
+    return encounter;
 }
