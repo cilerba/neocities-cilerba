@@ -34,6 +34,18 @@ const GameVersion = {
         "mapName": "mapsEmerald",
         "daynight": false,
         "abilities": 1
+    },
+    "FIRE_RED": {
+        "index": 6,
+        "mapName": "mapsFirered",
+        "daynight": false,
+        "abilities": 0
+    },
+    "LEAF_GREEN": {
+        "index": 7,
+        "mapName": "mapsLeafgreen",
+        "daynight": false,
+        "abilities": 0
     }
 }
 
