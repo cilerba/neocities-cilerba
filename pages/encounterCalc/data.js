@@ -3,49 +3,92 @@ const GameVersion = {
         "index": 0,
         "mapName": "mapsGold",
         "daynight": true,
-        "abilities": 0
+        "abilities": 0,
+        "gen": 2
     },
     "SILVER": {
         "index": 1,
         "mapName": "mapsSilver",
         "daynight": true,
-        "abilities": 0
+        "abilities": 0,
+        "gen": 2
     },
     "CRYSTAL": {
         "index": 2,
         "mapName": "mapsCrystal",
         "daynight": true,
-        "abilities": 0
+        "abilities": 0,
+        "gen": 2
     },
     "RUBY": {
         "index": 3,
         "mapName": "mapsRuby",
         "daynight": false,
-        "abilities": 0
+        "abilities": 0,
+        "gen": 3
     },
     "SAPPHIRE": {
         "index": 4,
         "mapName": "mapsSapphire",
         "daynight": false,
-        "abilities": 0
+        "abilities": 0,
+        "gen": 3
     },
     "EMERALD": {
         "index": 5,
         "mapName": "mapsEmerald",
         "daynight": false,
-        "abilities": 1
+        "abilities": 1,
+        "gen": 3
     },
     "FIRE_RED": {
         "index": 6,
         "mapName": "mapsFirered",
         "daynight": false,
-        "abilities": 0
+        "abilities": 0,
+        "gen": 3
     },
     "LEAF_GREEN": {
         "index": 7,
         "mapName": "mapsLeafgreen",
         "daynight": false,
-        "abilities": 0
+        "abilities": 0,
+        "gen": 3
+    },
+    "DIAMOND": {
+        "index": 8,
+        "mapName": "mapsDiamond",
+        "daynight": true,
+        "abilities": 1,
+        "gen": 4
+    },
+    "PEARL": {
+        "index": 9,
+        "mapName": "mapsPearl",
+        "daynight": true,
+        "abilities": 1,
+        "gen": 4
+    },
+    "PLATINUM": {
+        "index": 10,
+        "mapName": "mapsPlatinum",
+        "daynight": true,
+        "abilities": 1,
+        "gen": 4
+    },
+    "HEART_GOLD": {
+        "index": 11,
+        "mapName": "mapsHeartgold",
+        "daynight": true,
+        "abilities": 1,
+        "gen": 4
+    },
+    "SOUL_SILVER": {
+        "index": 12,
+        "mapName": "mapsSoulsilver",
+        "daynight": true,
+        "abilities": 1,
+        "gen": 4
     }
 }
 
