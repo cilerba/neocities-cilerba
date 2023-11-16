@@ -1,10 +1,9 @@
 .gridParent {
     display: grid;
-    grid-template-columns: 70% 30%;
+    grid-template-columns: 65% 30%;
     grid-template-rows: 1fr;
-    grid-column-gap: 24px;
+    grid-column-gap: 5%;
     grid-row-gap: 0px;
-    padding: 16px;
 }
 
 /* --- Encounter Slots --- */
@@ -98,7 +97,7 @@
 
 select, input{
     border: 2px solid rgb(202, 202, 202);
-    border-radius: 8px;
+    border-radius: 4px;
 
     padding: 4px;
     margin-right: 12px;
@@ -120,7 +119,7 @@ select, input{
 
 #encounterContainer {
     border: 1px solid #dfdfdf;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 10px;
 }
 
@@ -139,31 +138,33 @@ select, input{
 }
 
 .divButton {
-    background-color: #fde597;
+    background-color: #30aa81;
+    font-family: 'Lexend';
     outline: none;
-    border: 2px solid #c99a07;
-    border-radius: 24px;
+    border: 2px solid black;
+    box-shadow: 0px 2px 0px 0px black;
+    border-radius: 48px;
     cursor: pointer;
-    padding: 4px 10px;
+    padding: 12px 10px;
     user-select: none;
     -webkit-user-select: none;
-
+    font-weight: 500;
+    font-size: 27px;
+    color: white;
     text-align: center;
 }
 
 .divButton:hover {
-    background-color: #fff4cf;
-    border: 2px solid #eace74;
+    color: black;
+    background-color: #9fd37d;
 }
 
 .back {
     background-color: #f0385c;
-    border: 2px solid #b61131;
 }
 
 .back:hover {
     background-color: #fd7892;
-    border: 2px solid #db1d42;
 }
 
 .title {
