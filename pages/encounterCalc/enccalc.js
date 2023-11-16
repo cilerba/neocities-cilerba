@@ -154,10 +154,12 @@ function initSlotElements()
 function getMapEncounters(map, encounterType)
 {
     let swarmCheck = document.getElementById("checkSwarm");
+    let versionData = GameVersion[dropVersion.options[dropVersion.selectedIndex].getAttribute("localeid")];
 
-    if (GameVersion[dropVersion.options[dropVersion.selectedIndex].getAttribute("localeid")].daynight && EncounterType[encounterType] === EncounterType.WALKING)
+    if (versionData.daynight && EncounterType[encounterType] === EncounterType.WALKING)
     {
         // Swarm check
+        // TODO: Better identification for different encounter keys for each generation
         if (map.hasOwnProperty("outbreakMorningSlots") && map["outbreakMorningSlots"].length > 0 && swarmCheck.checked)
         {
             switch (dropTime.selectedIndex)
@@ -168,6 +170,22 @@ function getMapEncounters(map, encounterType)
                     return map["outbreakDaySlots"];
                 case 2:
                     return map["outbreakNightSlots"];
+            }
+        }
+
+        // TODO: Better identification system for versions to avoid string comparisons
+        if (dropTime[dropTime.selectedIndex].id != "walkSlots")
+        {
+            switch (dropVersion.options[dropVersion.selectedIndex].getAttribute("localeid"))
+            {
+                case "DIAMOND":
+                case "PEARL":
+                case "PLATINUM":
+                    let daySlots = JSON.parse(JSON.stringify(map["walkSlots"]));
+                    daySlots[2].pokemon = map[dropTime[dropTime.selectedIndex].id][0].pokemon;
+                    daySlots[3].pokemon = map[dropTime[dropTime.selectedIndex].id][1].pokemon;
+    
+                    return daySlots;
             }
         }
 
